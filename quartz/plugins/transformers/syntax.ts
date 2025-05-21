@@ -24,16 +24,6 @@ const defaultOptions: Options = {
 export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts: CodeOptions = { ...defaultOptions, ...userOpts }
 
-  opts.getHighlighter = async (opts) => {
-    console.log("creating highlighter");
-
-    const lighter = await createHighlighter({...opts, langs: []})
-
-    lighter.loadLanguageSync([JSON.parse(readFileSync("syntaxes/dm.json", "utf-8"))])
-
-    return lighter;
-  }
-
   return {
     name: "SyntaxHighlighting",
     htmlPlugins() {
