@@ -29,6 +29,11 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
     if (text) {
       const segments: (string | JSX.Element)[] = []
 
+      /* dm-ref EDIT */
+      if (fileData.frontmatter?.byond_version) {
+        segments.push(<span>Version {fileData.frontmatter.byond_version}</span>)
+      }
+
       if (fileData.dates) {
         segments.push(<Date date={getDate(cfg, fileData)!} locale={cfg.locale} />)
       }

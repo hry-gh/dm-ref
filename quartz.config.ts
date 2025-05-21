@@ -56,9 +56,13 @@ const config: QuartzConfig = {
   plugins: {
     transformers: [
       Plugin.FrontMatter({delimiters: "+++", language: "toml"}),
+
+      /*
       Plugin.CreatedModifiedDate({
         priority: ["frontmatter", "git", "filesystem"],
       }),
+      */
+
       Plugin.SyntaxHighlighting({
         theme: {
           light: "github-light",
@@ -89,7 +93,7 @@ const config: QuartzConfig = {
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
       // Comment out CustomOgImages to speed up build time
-      Plugin.CustomOgImages(),
+      // Plugin.CustomOgImages(),
     ],
   },
 }
