@@ -1,3 +1,12 @@
 @use "./base.scss";
 
 // put your custom CSS here!
+
+.callout {
+  &[data-callout="deprecated"] {
+    --color: #db4242;
+    --border: #db424244;
+    --bg: #db424210;
+    --callout-icon: var(--callout-icon-failure);
+  }
+}
