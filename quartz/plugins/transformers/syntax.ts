@@ -24,6 +24,11 @@ const defaultOptions: Options = {
 export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts: CodeOptions = { ...defaultOptions, ...userOpts }
 
+  /* dm-ref EDIT */
+  opts.defaultLang = {
+    "inline": "dream-maker"
+  }
+
   return {
     name: "SyntaxHighlighting",
     htmlPlugins() {

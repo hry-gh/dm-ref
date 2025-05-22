@@ -10,3 +10,7 @@
     --callout-icon: var(--callout-icon-failure);
   }
 }
+
+span[data-rehype-pretty-code-figure]>code {
+  border: 1px solid var(--lightgray)
+}
