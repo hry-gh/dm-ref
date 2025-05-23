@@ -254,6 +254,8 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   let emittedFiles = 0
   for (const emitter of cfg.plugins.emitters) {
+    if(emitter.disabled) continue;
+
     // Try to use partialEmit if available, otherwise assume the output is static
     const emitFn = emitter.partialEmit ?? emitter.emit
     const emitted = await emitFn(ctx, processedFiles, staticResources, changeEvents)

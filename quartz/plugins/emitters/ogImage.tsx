@@ -12,6 +12,8 @@ import { BuildCtx } from "../../util/ctx"
 import { QuartzPluginData } from "../vfile"
 import fs from "node:fs/promises"
 import chalk from "chalk"
+import { existsSync } from "node:fs"
+import path from "node:path"
 
 const defaultOptions: SocialImageOptions = {
   colorScheme: "lightMode",
@@ -106,6 +108,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
 
   return {
     name: CustomOgImagesEmitterName,
+    disabled: !existsSync(path.join("quartz", "redistless", "VERDANAI.TTF")),
     getQuartzComponents() {
       return []
     },

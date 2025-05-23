@@ -75,6 +75,10 @@ export async function fetchTtf(
   rawFontName: string,
   weight: FontWeight,
 ): Promise<Buffer<ArrayBufferLike> | undefined> {
+  if(rawFontName === "Verdana") {
+    return await fs.readFile(path.join("quartz", "redistless", "VERDANAI.TTF"))
+  }
+
   const fontName = rawFontName.replaceAll(" ", "+")
   const cacheKey = `${fontName}-${weight}`
   const cacheDir = path.join(QUARTZ, ".quartz-cache", "fonts")

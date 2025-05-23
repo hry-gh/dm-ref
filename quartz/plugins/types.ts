@@ -44,6 +44,7 @@ export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
 ) => QuartzEmitterPluginInstance
 export type QuartzEmitterPluginInstance = {
   name: string
+  disabled?: boolean,
   emit: (
     ctx: BuildCtx,
     content: ProcessedContent[],

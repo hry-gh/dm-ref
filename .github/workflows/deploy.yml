@@ -36,9 +36,15 @@ jobs:
             repository: hry-gh/dm-ref-scraper
             path: dm-ref-scraper
 
-      - run: |
+      - name: Run Scraping Tool
+        run: |
             cd dm-ref-scraper
             cargo run -- --ref $GITHUB_WORKSPACE/dm/info.html --output $GITHUB_WORKSPACE/content
+
+      - name: Prepare assets
+        run: |
+            wget https://font.download/dl/font/verdana.zip
+            unzip verdana.zip -d quartz/redistless
 
       - name: Build Quartz
         run: npx quartz build

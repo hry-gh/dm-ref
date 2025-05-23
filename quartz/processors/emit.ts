@@ -17,6 +17,8 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   const staticResources = getStaticResourcesFromPlugins(ctx)
   await Promise.all(
     cfg.plugins.emitters.map(async (emitter) => {
+      if(emitter.disabled) return;
+
       try {
         const emitted = await emitter.emit(ctx, content, staticResources)
         if (Symbol.asyncIterator in emitted) {
