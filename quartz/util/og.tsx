@@ -76,7 +76,7 @@ export async function fetchTtf(
   weight: FontWeight,
 ): Promise<Buffer<ArrayBufferLike> | undefined> {
   if(rawFontName === "Verdana") {
-    return await fs.readFile(path.join("quartz", "redistless", "VERDANAI.TTF"))
+    return await fs.readFile(path.join("quartz", "redistless", "Verdana.ttf"))
   }
 
   const fontName = rawFontName.replaceAll(" ", "+")

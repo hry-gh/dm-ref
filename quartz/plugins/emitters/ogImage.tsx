@@ -108,7 +108,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
 
   return {
     name: CustomOgImagesEmitterName,
-    disabled: !existsSync(path.join("quartz", "redistless", "VERDANAI.TTF")),
+    disabled: !existsSync(path.join("quartz", "redistless", "Verdana.ttf")),
     getQuartzComponents() {
       return []
     },

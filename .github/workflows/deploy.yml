@@ -43,8 +43,7 @@ jobs:
 
       - name: Prepare assets
         run: |
-            wget https://font.download/dl/font/verdana.zip
-            unzip verdana.zip -d quartz/redistless
+            wget https://raw.githubusercontent.com/adrienverge/copr-some-nice-fonts/590400b0e1426d7b10bdda48ab565d3d2b144f5e/Verdana.ttf -o quartz/redistless/Verdana.ttf
 
       - name: Build Quartz
         run: npx quartz build
