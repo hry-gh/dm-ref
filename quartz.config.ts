@@ -14,9 +14,7 @@ const config: QuartzConfig = {
     pageTitleSuffix: " | DM Reference",
     enableSPA: true,
     enablePopovers: true,
-    analytics: {
-      provider: "plausible",
-    },
+    analytics: null,
     locale: "en-US",
     baseUrl: "ref.harry.live",
     ignorePatterns: ["private", "templates", ".obsidian"],
@@ -58,13 +56,6 @@ const config: QuartzConfig = {
   plugins: {
     transformers: [
       Plugin.FrontMatter({delimiters: "+++", language: "toml"}),
-
-      /*
-      Plugin.CreatedModifiedDate({
-        priority: ["frontmatter", "git", "filesystem"],
-      }),
-      */
-
       Plugin.SyntaxHighlighting({
         theme: {
           light: "github-light",
