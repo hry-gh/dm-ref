@@ -258,7 +258,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             fontFamily: bodyFont,
           }}
         >
-          {cfg.baseUrl}
+          {cfg.baseUrl} | DM Reference
         </div>
       </div>
 
