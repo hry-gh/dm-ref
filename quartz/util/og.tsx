@@ -285,7 +285,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             textOverflow: "ellipsis",
           }}
         >
-          {fileData.frontmatter?.title} | DM Ref
+          {fileData.frontmatter?.title}
         </h1>
       </div>
 
