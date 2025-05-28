@@ -46,7 +46,18 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             }
 
             // otherwise, use the text content
-            const desc = text
+            let desc = text
+
+            if(file.data.frontmatter?.headers) {
+              for(const header of Object.keys(file.data.frontmatter?.headers)) {
+                desc = desc.replace(header, "")
+
+                for(const part of file.data.frontmatter.headers[header]) {
+                  desc = desc.replace(part, "")
+                }
+              }
+            }
+
             const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
             let finalDesc = ""
             let sentenceIdx = 0

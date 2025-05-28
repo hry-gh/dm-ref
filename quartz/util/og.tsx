@@ -36,7 +36,7 @@ export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: Fo
       name: headerFontName,
       data,
       weight,
-      style: "normal" as const,
+      style: "normal",
     }
   })
 
@@ -47,9 +47,16 @@ export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: Fo
       name: bodyFontName,
       data,
       weight,
-      style: "normal" as const,
+      style: "normal",
     }
   })
+
+  const data = await fetchTtf("Menlo", 600)
+  if(data) {
+    bodyFontPromises.push(new Promise((resolve) => {
+      resolve({name: "Menlo", data: data, weight: 600, style: "monospace"})
+    }))
+  }
 
   const [headerFonts, bodyFonts] = await Promise.all([
     Promise.all(headerFontPromises),
@@ -77,6 +84,9 @@ export async function fetchTtf(
 ): Promise<Buffer<ArrayBufferLike> | undefined> {
   if(rawFontName === "Verdana") {
     return await fs.readFile(path.join("quartz", "redistless", "Verdana.ttf"))
+  }
+  if(rawFontName === "Menlo") {
+    return await fs.readFile(path.join("quartz", "redistless", "Menlo.ttf"))
   }
 
   const fontName = rawFontName.replaceAll(" ", "+")
@@ -201,6 +211,14 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
   const bodyFont = getFontSpecificationName(cfg.theme.typography.body)
   const headerFont = getFontSpecificationName(cfg.theme.typography.header)
 
+  let hasRichBody = false;
+
+  if(fileData.frontmatter?.headers) {
+    const keys = Object.keys(fileData.frontmatter.headers)
+    if(keys.length > 0) hasRichBody = true;
+  }
+
+
   return (
     <div
       style={{
@@ -267,7 +285,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             textOverflow: "ellipsis",
           }}
         >
-          {title}
+          {fileData.frontmatter?.title} | DM Ref
         </h1>
       </div>
 
@@ -291,7 +309,27 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             textOverflow: "ellipsis",
           }}
         >
-          {description}
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+          }}>
+          {hasRichBody ? Object.keys(fileData.frontmatter?.headers!).slice(0, 3).map((header) => (
+            <div key={header} style={{
+              display: "flex",
+              flexDirection: "row",
+              flex: 1
+            }}>
+              <p style={{textDecoration: "underline", fontWeight: "bold"}}>
+              {header}:
+              </p>
+                {fileData.frontmatter?.headers ? (
+                  <p style={{marginLeft: "10px", fontFamily: header === "Format" ? "Menlo" : bodyFont}}>
+                  {fileData.frontmatter.headers[header][0]?.slice(0, 55)}{fileData.frontmatter.headers[header][0]?.length > 55 ? "..." : ""}{fileData.frontmatter?.headers[header].length > 1 ? " +" : "" }
+                  </p>
+                ) : ""}
+            </div>
+          )) : description}
+          </div>
         </p>
       </div>
 

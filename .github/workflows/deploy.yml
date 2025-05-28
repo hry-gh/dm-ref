@@ -44,6 +44,7 @@ jobs:
       - name: Prepare assets
         run: |
             wget https://raw.githubusercontent.com/adrienverge/copr-some-nice-fonts/590400b0e1426d7b10bdda48ab565d3d2b144f5e/Verdana.ttf -O quartz/redistless/Verdana.ttf
+            wget https://raw.githubusercontent.com/ueaner/fonts/8c1bccdc1622a2538c35abbd004ce367a949f642/Menlo-Regular.ttf -O quartz/redistless/Menlo.ttf
 
       - name: Build Quartz
         run: npx quartz build
