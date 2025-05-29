@@ -27,9 +27,13 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
     htmlPlugins() {
       return [
         () => {
-          return async (tree: HTMLRoot, file) => {
+          return async (_tree: HTMLRoot, file) => {
             let frontMatterDescription = file.data.frontmatter?.description
-            let text = escapeHTML(toString(tree))
+            let text = (file.value as string).replace(/\+\+\+.*\+\+\+/gs, "").replaceAll(/\[.*]\(([a-zA-Z0-9/]*)\)/g, "$1").replaceAll(/[>#`-]/g, "").replaceAll("\\_", "_")
+
+            if(file.data.frontmatter?.title === "DrawBox proc (icon)") {
+              console.log(text);
+            }
 
             if (opts.replaceExternalLinks) {
               frontMatterDescription = frontMatterDescription?.replace(
@@ -53,7 +57,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
                 desc = desc.replace(header, "")
 
                 for(const part of file.data.frontmatter.headers[header]) {
-                  desc = desc.replace(part, "")
+                  desc = desc.replace(part.replaceAll(/[>#`-]/g, ""), "")
                 }
               }
             }
