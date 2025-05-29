@@ -31,10 +31,6 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             let frontMatterDescription = file.data.frontmatter?.description
             let text = (file.value as string).replace(/\+\+\+.*\+\+\+/gs, "").replaceAll(/\[.*]\(([a-zA-Z0-9/]*)\)/g, "$1").replaceAll(/[>#`-]/g, "").replaceAll("\\_", "_")
 
-            if(file.data.frontmatter?.title === "DrawBox proc (icon)") {
-              console.log(text);
-            }
-
             if (opts.replaceExternalLinks) {
               frontMatterDescription = frontMatterDescription?.replace(
                 urlRegex,
