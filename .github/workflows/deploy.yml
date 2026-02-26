@@ -7,6 +7,8 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [trigger-workflow]
+  schedule:
+    - cron: '0 0 * * *'
 
 
 permissions:
@@ -31,6 +33,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Download BYOND
+        run: |
+            wget https://byond-builds.dm-lang.org/516/516.latest_byond.zip -O byond.zip
+            unzip byond.zip
+
       - uses: actions/checkout@v4
         with:
             repository: hry-gh/dm-ref-scraper
@@ -39,7 +46,7 @@ jobs:
       - name: Run Scraping Tool
         run: |
             cd dm-ref-scraper
-            cargo run -- --ref $GITHUB_WORKSPACE/dm/info.html --output $GITHUB_WORKSPACE/content
+            cargo run -- --ref $GITHUB_WORKSPACE/byond/help/ref/info.html --output $GITHUB_WORKSPACE/content
 
       - name: Prepare assets
         run: |
