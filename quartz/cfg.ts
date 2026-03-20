@@ -70,6 +70,9 @@ export interface GlobalConfiguration {
    * Region Codes: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
    */
   locale: ValidLocale
+
+  /// The BYOND version this reference was built for
+  builtFor: string
 }
 
 export interface QuartzConfig {

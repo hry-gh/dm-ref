@@ -11,8 +11,11 @@ export default ((opts?: Options) => {
   const Footer: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
+    const byondVersion = cfg.builtFor
+
     return (
       <footer class={`${displayClass ?? ""}`}>
+        <p>Built for BYOND {byondVersion}</p>
         <p>
           {i18n(cfg.locale).components.footer.createdWith}{" "}
           <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a> © {year}
