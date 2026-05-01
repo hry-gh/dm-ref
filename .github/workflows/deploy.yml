@@ -24,9 +24,9 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -43,7 +43,7 @@ jobs:
             BYOND_VERSION=$(strings byond/bin/byondcore.dll | grep -oE 'Version [0-9]{3}\.[0-9]{4}' | sed 's/Version //')
             sed -i "s/%BYOND VERSION%/$BYOND_VERSION/" quartz.config.ts
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
             repository: hry-gh/dm-ref-scraper
             path: dm-ref-scraper
@@ -62,7 +62,7 @@ jobs:
         run: npx quartz build --directory $GITHUB_WORKSPACE/content
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
@@ -76,4 +76,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
