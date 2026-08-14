@@ -24,3 +24,8 @@ variable "discord_client_secret" {
   type      = string
   sensitive = true
 }
+
+variable "github_repo" {
+  type    = string
+  default = "spacestation13/dm-ref"
+}
