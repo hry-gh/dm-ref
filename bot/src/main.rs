@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use axum::extract::Path;
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
-use axum::extract::Path;
 use axum::routing::{get, post};
 use axum::Router;
 use ed25519_dalek::{Signature, Verifier, VerifyingKey};
@@ -218,7 +218,11 @@ async fn handle_snippet_create(
         Ok(_) => axum::Json(json!({"id": short_id})).into_response(),
         Err(e) => {
             tracing::error!("firestore insert failed: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, "failed to create snippet").into_response()
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "failed to create snippet",
+            )
+                .into_response()
         }
     }
 }
@@ -283,7 +287,6 @@ async fn handle_share(
         Err(_) => return (StatusCode::UNAUTHORIZED, "invalid user response").into_response(),
     };
 
-    // Build embed fields, omitting empty code/output
     let mut fields = Vec::new();
 
     if !req.code.is_empty() {
@@ -327,7 +330,6 @@ async fn handle_share(
         }]
     });
 
-    // Post message to the specified channel
     let post_resp = state
         .http_client
         .post(format!(
@@ -429,8 +431,7 @@ fn wrap_in_main_if_needed(code: &str) -> String {
             || trimmed.starts_with("/verb/")
             || trimmed.starts_with("proc/")
             || trimmed.starts_with("verb/")
-            || trimmed.ends_with(")")
-                && (trimmed.contains("/proc/") || trimmed.contains("/verb/"))
+            || trimmed.ends_with(")") && (trimmed.contains("/proc/") || trimmed.contains("/verb/"))
     });
 
     if has_definition {
@@ -456,15 +457,12 @@ async fn handle_command(interaction: &Interaction, state: &AppState) -> serde_js
     if command_name == Some("Open in Playground") {
         let channel_id = interaction.channel_id.clone();
         let target_id = interaction.data.as_ref().and_then(|d| d.target_id.clone());
-        let code = interaction
-            .data
-            .as_ref()
-            .and_then(|d| {
-                let target_id = d.target_id.as_deref()?;
-                let messages = d.resolved.as_ref()?.messages.as_ref()?;
-                let msg = messages.get(target_id)?;
-                extract_code_block(msg.content.as_deref()?)
-            });
+        let code = interaction.data.as_ref().and_then(|d| {
+            let target_id = d.target_id.as_deref()?;
+            let messages = d.resolved.as_ref()?.messages.as_ref()?;
+            let msg = messages.get(target_id)?;
+            extract_code_block(msg.content.as_deref()?)
+        });
 
         let Some(code) = code else {
             return json!({
@@ -486,7 +484,10 @@ async fn handle_command(interaction: &Interaction, state: &AppState) -> serde_js
             let mut encoder = ZlibEncoder::new(Vec::new(), Compression::new(4));
             encoder.write_all(json.as_bytes()).unwrap();
             let compressed = encoder.finish().unwrap();
-            format!("1:{}", base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&compressed))
+            format!(
+                "1:{}",
+                base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&compressed)
+            )
         };
 
         let short_id = {
@@ -559,7 +560,10 @@ async fn handle_command(interaction: &Interaction, state: &AppState) -> serde_js
 
             if let Ok(resp) = state
                 .http_client
-                .post(format!("https://discord.com/api/v10/channels/{}/messages", ch_id))
+                .post(format!(
+                    "https://discord.com/api/v10/channels/{}/messages",
+                    ch_id
+                ))
                 .header("Authorization", format!("Bot {}", state.bot_token))
                 .json(&reply_msg)
                 .send()
@@ -591,13 +595,15 @@ async fn handle_command(interaction: &Interaction, state: &AppState) -> serde_js
     if command_name == Some("play") {
         let is_dm = interaction.guild_id.is_none();
 
-        let parse_perms = |perms: Option<&str>| -> u64 {
-            perms
-                .and_then(|p| p.parse::<u64>().ok())
-                .unwrap_or(0)
-        };
+        let parse_perms =
+            |perms: Option<&str>| -> u64 { perms.and_then(|p| p.parse::<u64>().ok()).unwrap_or(0) };
 
-        let member_bits = parse_perms(interaction.member.as_ref().and_then(|m| m.permissions.as_deref()));
+        let member_bits = parse_perms(
+            interaction
+                .member
+                .as_ref()
+                .and_then(|m| m.permissions.as_deref()),
+        );
         let app_bits = parse_perms(interaction.app_permissions.as_deref());
 
         let embedded_activities = 1u64 << 39;
@@ -607,12 +613,14 @@ async fn handle_command(interaction: &Interaction, state: &AppState) -> serde_js
         let user_can_external = member_bits & external_apps != 0;
         let can_launch = is_dm || guild_installed || user_can_external;
 
-
         if can_launch {
             return json!({"type": 12});
         }
 
-        let app_link = format!("https://discord.com/discovery/applications/{}", state.client_id);
+        let app_link = format!(
+            "https://discord.com/discovery/applications/{}",
+            state.client_id
+        );
         return json!({
             "type": 4,
             "data": {
@@ -1199,8 +1207,6 @@ async fn main() {
     let client_secret =
         std::env::var("DISCORD_CLIENT_SECRET").expect("missing DISCORD_CLIENT_SECRET");
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
-    let static_dir = std::env::var("STATIC_DIR")
-        .unwrap_or_else(|_| "/usr/local/share/dm-playground".to_string());
 
     let public_key_bytes = hex::decode(&public_key_hex).expect("invalid public key hex");
     let public_key = VerifyingKey::from_bytes(
@@ -1261,17 +1267,12 @@ async fn main() {
         firestore,
     });
 
-    let serve_dir = tower_http::services::ServeDir::new(&static_dir).fallback(
-        tower_http::services::ServeFile::new(format!("{}/index.html", static_dir)),
-    );
-
     let app = Router::new()
         .route("/interactions", post(handle_interaction))
         .route("/share", post(handle_share))
         .route("/api/discord/token", post(handle_token_exchange))
         .route("/api/snippets", post(handle_snippet_create))
         .route("/api/snippets/{id}", get(handle_snippet_get))
-        .fallback_service(serve_dir)
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))

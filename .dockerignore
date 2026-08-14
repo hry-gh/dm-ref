@@ -1,7 +1,5 @@
 bot/target/
 scraper/target/
-dm-playground/node_modules/
-dm-playground/dist/
 node_modules/
 public/
 content/
