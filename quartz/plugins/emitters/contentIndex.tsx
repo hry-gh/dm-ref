@@ -92,6 +92,34 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndexMap, limit?:
   </rss>`
 }
 
+function searchTokens(content: ContentDetails): string[] {
+  return Array.from(
+    new Set(`${content.slug} ${content.title} ${content.content}`.toLowerCase().match(/[a-z0-9_]+/g) ?? []),
+  )
+}
+
+function searchShard(token: string): string {
+  let hash = 0
+  for (const character of token) {
+    hash = (Math.imul(hash, 31) + character.charCodeAt(0)) >>> 0
+  }
+  return String(hash % 256).padStart(3, "0")
+}
+
+function createMcpSearchIndex(index: ContentIndexMap): Map<string, Map<string, string[]>> {
+  const searchIndex = new Map<string, Map<string, string[]>>()
+  for (const [slug, page] of index) {
+    for (const token of searchTokens(page)) {
+      const tokens = searchIndex.get(searchShard(token)) ?? new Map<string, string[]>()
+      const pages = tokens.get(token) ?? []
+      pages.push(slug)
+      tokens.set(token, pages)
+      searchIndex.set(searchShard(token), tokens)
+    }
+  }
+  return searchIndex
+}
+
 export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
   opts = { ...defaultOptions, ...opts }
   return {
@@ -155,6 +183,15 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         slug: fp,
         ext: ".json",
       })
+
+      for (const [shard, tokens] of createMcpSearchIndex(linkIndex)) {
+        yield write({
+          ctx,
+          content: JSON.stringify(Object.fromEntries(tokens)),
+          slug: joinSegments("static", "mcp", "search", shard) as FullSlug,
+          ext: ".json",
+        })
+      }
     },
     externalResources: (ctx) => {
       if (opts?.enableRSS) {

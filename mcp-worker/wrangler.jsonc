@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dm-reference-mcp",
+  "account_id": "c82ebce7921e9aa2dbbd32aa4d41fbe1",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-26",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "ref.dm-lang.org/mcp*",
+      "zone_name": "dm-lang.org"
+    }
+  ],
+  "vars": {
+    "STATIC_BASE_URL": "https://ref.dm-lang.org/static/"
+  }
+}
