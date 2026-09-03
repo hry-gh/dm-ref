@@ -7,7 +7,8 @@ export function canonicalUrl(slug: string): string {
 }
 
 export async function getSearchResults(env: Env, query: string): Promise<string[]> {
-  const tokens = query.toLowerCase().match(/[a-z0-9_]+/g) ?? []
+  // Deduplicate terms so repeated words do not skew
+  const tokens = [...new Set(query.toLowerCase().match(/[a-z0-9_]+/g) ?? [])]
   if (tokens.length === 0) {
     return []
   }
@@ -21,10 +22,28 @@ export async function getSearchResults(env: Env, query: string): Promise<string[
     return index[token] ?? []
   }))
 
-  return matches.reduce((intersection, pages) => {
+  // Prefer precise results, but tolerate verbose queries
+  const intersection = matches.reduce((intersection, pages) => {
     const pageSet = new Set(pages)
     return intersection.filter((slug) => pageSet.has(slug))
   })
+
+  if (intersection.length > 0) {
+    return intersection
+  }
+
+  // Weight rare terms more heavily so broad terms do not dominate
+  const scores = new Map<string, number>()
+  for (const pages of matches) {
+    const tokenWeight = 1 / Math.log2(pages.length + 1)
+    for (const slug of pages) {
+      scores.set(slug, (scores.get(slug) ?? 0) + tokenWeight)
+    }
+  }
+
+  return [...scores.entries()]
+    .sort((left, right) => right[1] - left[1])
+    .map(([slug]) => slug)
 }
 
 function searchShard(token: string): string {

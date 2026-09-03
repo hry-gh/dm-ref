@@ -8,7 +8,7 @@ export function createServer(env: Env): McpServer {
   server.registerTool(
     "search_dm_ref",
     {
-      description: "Search the BYOND Dream Maker language reference.",
+      description: "Search the BYOND Dream Maker language reference. Use a few distinctive keywords.",
       inputSchema: z.object({ query: z.string().min(1).max(200) }),
     },
     async ({ query }) => {
